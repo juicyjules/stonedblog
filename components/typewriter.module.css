@@ -1,0 +1,88 @@
+.madeWith {
+    position: absolute;
+    left:50%;
+    top:0;
+    transform: translate(-50%,0);
+    text-align:left;
+    font-style:italic;
+    display:block;
+    width:auto;
+}
+.white {
+    color:white;
+}
+.icon {
+    padding:0.1rem;
+    font-size:1.2em;
+    display:inline-block;
+    vertical-align: bottom;
+}
+.heartbeat {
+    transition: color 0.2s linear;
+}
+.heartbeat:hover{
+    animation: heart 1s infinite linear;
+    color:red;
+    cursor:default;
+}
+@keyframes heart {
+    0% {
+        transform: scale(1)
+    }
+    40% {
+        transform: scale(1.2)
+
+    }
+    100% {
+        transform: scale(1)
+
+    }
+}
+.julesanchor {
+    position:relative;
+    display:inline-block;
+    width:2em;
+}
+.jules {
+    font-weight: bold;
+    font-style: normal;
+    position:absolute;
+    top:0px;
+    text-decoration:none;
+}
+.jules:hover {
+    text-decoration:none;
+}
+.typewritten {
+    position:relative;
+    display:inline-block;
+    padding:0rem 0.1rem;
+    text-align:left;
+}
+.typewritten:empty:before {
+    content: "\200b";
+}
+  
+.typewritten::after {
+    content: "";
+    display:block;
+    position: absolute;
+    top: 0;
+    right: -4px;
+    width: 3px;
+    height: 100%;
+    background: var(--accent);
+    animation: blinking 1s infinite;
+}
+@keyframes blinking {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+    
+}
