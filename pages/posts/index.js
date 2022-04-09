@@ -29,7 +29,7 @@ export default function Posts({ posts }){
             <section className={utilStyles.headingMd}>
             <ul className={utilStyles.list}>
                 {posts.map((post) => (
-                    <BlogpostInfo post={post}/>
+                    <BlogpostInfo key={post.id} post={post}/>
                 ))}
             </ul>
         </section>
