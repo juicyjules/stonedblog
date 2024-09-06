@@ -14,7 +14,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        nodejs = pkgs.nodejs-16_x;
+        nodejs = pkgs.nodejs-18_x;
 
         node2nixOutput = import ./nix { inherit pkgs nodejs system; };
         # NOTE: may want to try https://github.com/svanderburg/node2nix/issues/301 to limit rebuilds
@@ -24,7 +24,8 @@
           version = "0.1.0";
           src = gitignore.lib.gitignoreSource ./.;
           buildInputs = [ nodejs ];
-          buildPhase = ''
+
+            buildPhase = ''
             runHook preBuild
 
             # symlink the generated node deps to the current directory for building
@@ -32,32 +33,22 @@
             export PATH="${nodeDeps}/bin:$PATH"
 
             npm run build
-
             runHook postBuild
-          '';
-          installPhase = ''
+            '';
+
+            installPhase = ''
             runHook preInstall
-
-            # Note: you need some sort of `mkdir` on $out for any of the following commands to work
-            mkdir -p $out/bin
-
-            # copy only whats needed for running the built app
-            cp package.json $out/package.json
-            cp -r dist $out/dist
-            ln -sf ${nodeDeps}/lib/node_modules $out/node_modules
-
-            # copy entry point, in this case our index.ts has the node shebang
-            # nix will patch the shebang to be the node version specified in buildInputs
-            # you could also copy in a script that is basically `npm run start`
-            cp dist/index.js $out/bin/example-ts-nix
-            chmod a+x $out/bin/example-ts-nix
-
+            mkdir -p $out
+            # cp -r .next $out/.next
+            # cp -r public $out/public
+            # cp package.json $out/package.json
+            cp -r out $out
             runHook postInstall
-          '';
+            '';
         };
       in with pkgs; {
         defaultPackage = app;
-        devShell = mkShell { buildInputs = [ nodejs node2nix ]; };
+        devShell = mkShell { buildInputs = [ nodejs node2nix nodeDeps ]; };
       });
 }
 
