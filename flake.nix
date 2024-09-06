@@ -1,5 +1,5 @@
 {
-  description = "Sample Nix ts-node build";
+  description = "Just a small and cute  Next.js blog as done in the tutorial ;)";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -20,8 +20,8 @@
         # NOTE: may want to try https://github.com/svanderburg/node2nix/issues/301 to limit rebuilds
         nodeDeps = node2nixOutput.nodeDependencies;
         app = pkgs.stdenv.mkDerivation {
-          name = "example-ts-node";
-          version = "0.1.0";
+          name = "stonedblog";
+          version = "1.0.0";
           src = gitignore.lib.gitignoreSource ./.;
           buildInputs = [ nodejs ];
 
@@ -32,7 +32,8 @@
             ln -sf ${nodeDeps}/lib/node_modules ./node_modules
             export PATH="${nodeDeps}/bin:$PATH"
 
-            npm run build
+            next build
+            next export
             runHook postBuild
             '';
 
@@ -42,7 +43,7 @@
             # cp -r .next $out/.next
             # cp -r public $out/public
             # cp package.json $out/package.json
-            cp -r dist/* $out/
+            cp -r 'out/*' $out/
             runHook postInstall
             '';
         };
