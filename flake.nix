@@ -48,8 +48,8 @@
             '';
         };
       in with pkgs; {
-        defaultPackage = app;
-        devShell = mkShell { buildInputs = [ nodejs node2nix nodeDeps ]; };
+        packages.default = app;
+        devShells.default = mkShell { buildInputs = [ nodejs node2nix nodeDeps ]; };
       });
 }
 
