@@ -42,7 +42,7 @@
             # cp -r .next $out/.next
             # cp -r public $out/public
             # cp package.json $out/package.json
-            cp -r out $out
+            cp -r dist/* $out/
             runHook postInstall
             '';
         };
