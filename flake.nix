@@ -14,7 +14,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        nodejs = pkgs.nodejs-18_x;
+        nodejs = pkgs.nodejs;
 
         node2nixOutput = import ./nix { inherit pkgs nodejs system; };
         # NOTE: may want to try https://github.com/svanderburg/node2nix/issues/301 to limit rebuilds
