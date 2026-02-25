@@ -1,5 +1,5 @@
 {
-  description = "Just a small and cute  Next.js blog as done in the tutorial ;)";
+  description = "Just a small and cute Next.js blog as done in the tutorial ;)";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -16,41 +16,53 @@
         pkgs = import nixpkgs { inherit system; };
         nodejs = pkgs.nodejs;
 
-        node2nixOutput = import ./nix { inherit pkgs nodejs system; };
-        # NOTE: may want to try https://github.com/svanderburg/node2nix/issues/301 to limit rebuilds
-        nodeDeps = node2nixOutput.nodeDependencies;
-        app = pkgs.stdenv.mkDerivation {
-          name = "stonedblog";
+        app = pkgs.buildNpmPackage {
+          pname = "stonedblog";
           version = "1.0.0";
+          
           src = gitignore.lib.gitignoreSource ./.;
-          buildInputs = [ nodejs ];
+          
+          # IMPORTANT: We start with a fake hash. Nix will complain on the first
+          # build and give you the real hash to paste in here.
+          npmDepsHash = "sha256-qHlJfpVA7fduloCJH6NzIB5PjyytDVk1BcNMn3UVdIo="; 
 
-            buildPhase = ''
+          # Disable Next.js telemetry during the build
+          NEXT_TELEMETRY_DISABLED = 1;
+
+          # buildNpmPackage usually runs `npm run build` by default.
+          # If your package.json has a build script, that works perfectly!
+          # Otherwise, we can manually run the Next.js commands here:
+          buildPhase = ''
             runHook preBuild
-
-            # symlink the generated node deps to the current directory for building
-            ln -sf ${nodeDeps}/lib/node_modules ./node_modules
-            export PATH="${nodeDeps}/bin:$PATH"
-
-            next build
-            next export
+            
+            # Use npx to run the locally installed next binaries
+            npx next build
+            npx next export
+            
             runHook postBuild
-            '';
+          '';
 
-            installPhase = ''
+          installPhase = ''
             runHook preInstall
+            
             mkdir -p $out
-            # cp -r .next $out/.next
-            # cp -r public $out/public
-            # cp package.json $out/package.json
+            # Next.js static exports default to the 'out' directory
             cp -r out/* $out/
+            
             runHook postInstall
-            '';
+          '';
         };
-      in with pkgs; {
+      in {
         packages.default = app;
         defaultPackage = app;
-        devShells.default = mkShell { buildInputs = [ nodejs node2nix nodeDeps ]; };
+        
+        devShells.default = pkgs.mkShell { 
+          buildInputs = [ 
+            nodejs 
+            # Added this helper tool. It's great for fetching the new npmDepsHash 
+            # if you ever update your dependencies in the future!
+            pkgs.prefetch-npm-deps 
+          ]; 
+        };
       });
 }
-
